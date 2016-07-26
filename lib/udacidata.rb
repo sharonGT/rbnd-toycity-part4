@@ -41,21 +41,33 @@ class Udacidata < Module
   	end
 
 	def self.first(element = 1)
-		data = self.all
+		products = self.all
 		if element == 1
-			return data.first(1)[0]
+			return products.first(1)[0]
 		else
-			return data.first(element)
+			return products.first(element)
 		end
 	end
 
 	def self.last(element = 1)
-		data = self.all
+		products = self.all
 		if element == 1
-			return data.last(1)[0]
+			return products.last(1)[0]
 		else
-			return data.last(element)
+			return products.last(element)
 		end
 	end
+
+	def self.find(index)
+		products = self.all
+		products.select! { |product| product.id == index }
+		if products.empty?
+			raise ProductNotFoundError
+		else
+			return products[0]
+		end
+	end
+
+
 
 end
