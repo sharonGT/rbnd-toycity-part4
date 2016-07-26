@@ -4,9 +4,9 @@ require 'csv'
 
 class Udacidata < Module
 
- create_finder_methods :id, :brand, :name, :price
+@@data_path = File.expand_path("..", Dir.pwd) + "/data/data.csv"
 
-  @@data_path = File.expand_path("..", Dir.pwd) + "/data/data.csv"
+ create_finder_methods :id, :brand, :name, :price
 
 	def self.create(attributes = nil)
 		list = CSV.read(@@data_path)
@@ -31,15 +31,31 @@ class Udacidata < Module
 	end
 
 
-	def self.all 
-		product_array = []
-			CSV.foreach( @@data_path, headers: true ) do |product|
-				product_array << self.new(id: product["id"], brand: product["brand"], name: product["product"], price: product["price"])
-			end
-		product_array
-	end 
+  	def self.all
+    	products = []
 
-	
+    	CSV.foreach( @@data_path, headers: true ) do |prod|
+      		products << self.new( id: prod["id"], brand: prod["brand"], name: prod["product"], price: prod["price"] )
+    	end
+    	products
+  	end
 
-	
+	def self.first(element = 1)
+		data = self.all
+		if element == 1
+			return data.first(1)[0]
+		else
+			return data.first(element)
+		end
+	end
+
+	def self.last(element = 1)
+		data = self.all
+		if element == 1
+			return data.last(1)[0]
+		else
+			return data.last(element)
+		end
+	end
+
 end
