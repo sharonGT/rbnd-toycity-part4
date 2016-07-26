@@ -4,7 +4,8 @@ require 'csv'
 
 class Udacidata < Module
 
-@@data_path = File.expand_path("..", Dir.pwd) + "/data/data.csv"
+@@data_path = File.dirname(__FILE__) + "/../data/data.csv"
+#@@data_path = File.expand_path("..", Dir.pwd) + "/data/data.csv"
 
  create_finder_methods :id, :brand, :name, :price
 
@@ -62,21 +63,32 @@ class Udacidata < Module
 		products = self.all
 		products.select! { |product| product.id == index }
 		if products.empty?
-			raise ProductNotFoundError, "Product with id #{id} not found"
+			raise ProductNotFoundError
 		else
 			return products[0]
 		end
 	end
 
 	def self.destroy(id)
-		list = CSV.table(@@data_path)
-		delete = find(id)
-		list.delete_if { |product| product[:id] == id }
-
-		File.open(@@data_path, "w") do |f|
-			f.write(list.to_csv)
+		
+		to_delete = nil
+		products = self.all
+		to_delete = products.index { |product| product.id == id }
+		
+		if to_delete.nil?
+			raise ProductNotFoundError
 		end
-		delete
+
+		deleted = products.delete_at to_delete
+
+		CSV.open(@@data_path, "wb") do |csv|
+			csv << ["id", "brand", "product", "price"]
+			products.each do |product|
+				csv << [product.id, product.brand, product.name, product.price]
+			end
+		end
+
+		return deleted
 	end
 
 	def self.where(options = {})
@@ -84,7 +96,7 @@ class Udacidata < Module
 	end
 
 	def update(options = {})
-		product = Product.find(@id)
+		product = Product.find(id)
 		
 		brand = options[:brand] ? options[:brand] : product.brand
 		name = options[:name] ? options[:name] : product.name
