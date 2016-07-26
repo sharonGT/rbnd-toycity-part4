@@ -79,5 +79,10 @@ class Udacidata < Module
 		delete
 	end
 
+	def self.where(options = {})
+		self.all.select { |product| options[:brand] == product.brand || options[:name] == product.name }
+	end
+
+
 
 end
