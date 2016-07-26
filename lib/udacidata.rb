@@ -2,6 +2,34 @@ require_relative 'find_by'
 require_relative 'errors'
 require 'csv'
 
-class Udacidata
-  # Your code goes here!
+class Udacidata < Module
+
+ create_finder_methods :id, :brand, :name, :price
+
+  @@data_path = File.expand_path("..", Dir.pwd) + "/data/data.csv"
+
+	def self.create(attributes = nil)
+		list = CSV.read(@@data_path)
+
+    	product_update = attributes[:id] ? true : false
+
+    	product = Product.new(attributes)
+    	CSV.open(@@data_path, 'wb') do |csv|
+     		list.each do |data|
+        		if product_update && data[0].to_i == product.id
+          			csv << [product.id, product.brand, product.name, product.price]
+        		else
+          			csv << data
+        		end
+      		end
+      		if !product_update
+        		csv << [product.id, product.brand, product.name, product.price]
+      		end
+    	end
+
+    	return product
+	end
+
+	
+
 end
