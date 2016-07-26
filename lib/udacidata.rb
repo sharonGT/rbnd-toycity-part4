@@ -62,12 +62,22 @@ class Udacidata < Module
 		products = self.all
 		products.select! { |product| product.id == index }
 		if products.empty?
-			raise ProductNotFoundError
+			raise ProductNotFoundError, "Product with id #{id} not found"
 		else
 			return products[0]
 		end
 	end
 
+	def self.destroy(id)
+		list = CSV.table(@@data_path)
+		delete = find(id)
+		list.delete_if { |product| product[:id] == id }
+
+		File.open(@@data_path, "w") do |f|
+			f.write(list.to_csv)
+		end
+		delete
+	end
 
 
 end
