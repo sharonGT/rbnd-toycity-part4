@@ -27,9 +27,19 @@ class Udacidata < Module
       		end
     	end
 
-    	return product
+    	product
 	end
+
+
+	def self.all 
+		product_array = []
+			CSV.foreach( @@data_path, headers: true ) do |product|
+				product_array << self.new(id: product["id"], brand: product["brand"], name: product["product"], price: product["price"])
+			end
+		product_array
+	end 
 
 	
 
+	
 end
